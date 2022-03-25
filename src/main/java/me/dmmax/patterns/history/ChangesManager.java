@@ -1,77 +1,59 @@
 package me.dmmax.patterns.history;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import me.dmmax.patterns.history.command.Command;
-import me.dmmax.patterns.history.listeners.AddUserListener;
-import me.dmmax.patterns.history.listeners.DeleteUserListener;
-
-import java.util.ArrayList;
-import java.util.List;
+import me.dmmax.patterns.history.event.AddUserEvent;
+import me.dmmax.patterns.history.event.ChangesEvent;
+import me.dmmax.patterns.history.event.DeleteUserEvent;
 
 public class ChangesManager {
 
     // Service
-    private final CommandsExecutor commandsExecutor = new CommandsExecutor();
+    private final HistoryProvider historyProvider = new HistoryProvider();
 
     // Listeners
-    private final List<AddUserListener> addUserListeners = new ArrayList<>();
-    private final List<DeleteUserListener> deleteUserListeners = new ArrayList<>();
+    private final EventBus eventBus = new EventBus("Changes Manager");
 
     // Data
     private final ChangesState state;
 
     public ChangesManager(ChangesState state) {
         this.state = state;
+        initInternalListeners();
+    }
+
+    private void initInternalListeners() {
+        registerListener(new ChangesListener() {
+            @Subscribe
+            public void onAddedUser(AddUserEvent event) {
+                state.addUser(event.user());
+            }
+        });
+        registerListener(new ChangesListener() {
+            @Subscribe
+            public void onDeletedUser(DeleteUserEvent event) {
+                state.deleteUser(event.user());
+            }
+        });
     }
 
     public void executeCommand(Command command) {
-        commandsExecutor.execute(command);
+        System.out.println("Executing command");
+        command.execute();
+        eventBus.post(command);
+        historyProvider.addCommand(command);
     }
 
-    // HISTORY
-
-    public void undo() {
-        commandsExecutor.undo();
+    public void post(ChangesEvent event) {
+        eventBus.post(event);
     }
 
-    public boolean canUndo() {
-        return commandsExecutor.canUndo();
+    public void registerListener(ChangesListener listener) {
+        eventBus.register(listener);
     }
 
-    public void redo() {
-        commandsExecutor.redo();
-    }
-
-    public boolean canRedo() {
-        return commandsExecutor.canRedo();
-    }
-
-    // ADD USER
-
-    public void addUser(String user) {
-        state.addUser(user);
-        notifyAddUserListeners(user);
-    }
-
-    public void addListener(AddUserListener listener) {
-        addUserListeners.add(listener);
-    }
-
-    private void notifyAddUserListeners(String user) {
-        addUserListeners.forEach(listener -> listener.onAddedUser(user));
-    }
-
-    // DELETE USER
-
-    public void deleteUser(String user) {
-        state.deleteUser(user);
-        notifyDeleteUserListeners(user);
-    }
-
-    public void addListener(DeleteUserListener listener) {
-        deleteUserListeners.add(listener);
-    }
-
-    private void notifyDeleteUserListeners(String user) {
-        deleteUserListeners.forEach(listener -> listener.onRemovedUser(user));
+    public HistoryProvider historyProvider() {
+        return historyProvider;
     }
 }

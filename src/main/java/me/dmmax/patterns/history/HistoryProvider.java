@@ -5,16 +5,14 @@ import me.dmmax.patterns.history.command.Command;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class CommandsExecutor {
+public class HistoryProvider {
 
     private final Deque<Command> undoHistory = new ArrayDeque<>();
     private final Deque<Command> redoHistory = new ArrayDeque<>();
 
-    public void execute(Command command) {
-        System.out.println("Executing command");
-        command.execute();
+    public void addCommand(Command command) {
         redoHistory.clear();
-        undoHistory.add(command.undo());
+        undoHistory.add(command.undoCommand());
     }
 
     public void undo() {
@@ -30,7 +28,7 @@ public class CommandsExecutor {
         assert !historyCommands.isEmpty();
         var fromCommand = historyCommands.pollLast();
         fromCommand.execute();
-        undoCommands.add(fromCommand.undo());
+        undoCommands.add(fromCommand.undoCommand());
     }
 
     public boolean canUndo() {

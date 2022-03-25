@@ -4,5 +4,5 @@ public interface Command {
 
     void execute();
 
-    Command undo();
+    Command undoCommand();
 }

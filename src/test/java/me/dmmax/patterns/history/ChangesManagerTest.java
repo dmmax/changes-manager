@@ -1,9 +1,10 @@
 package me.dmmax.patterns.history;
 
+import com.google.common.eventbus.Subscribe;
 import me.dmmax.patterns.history.command.AddUserCommand;
 import me.dmmax.patterns.history.command.DeleteUserCommand;
-import me.dmmax.patterns.history.listeners.AddUserListener;
-import me.dmmax.patterns.history.listeners.DeleteUserListener;
+import me.dmmax.patterns.history.event.AddUserEvent;
+import me.dmmax.patterns.history.event.DeleteUserEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,14 +14,25 @@ class ChangesManagerTest {
 
     private final ChangesState changesState = new ChangesState();
     private final ChangesManager changesManager = new ChangesManager(changesState);
+    private final HistoryProvider historyProvider = changesManager.historyProvider();
 
     private int addUserEventsCount = 0;
     private int deleteUserEventsCount = 0;
 
     @BeforeEach
     void setUp() {
-        changesManager.addListener((AddUserListener) user -> addUserEventsCount++);
-        changesManager.addListener((DeleteUserListener) user -> deleteUserEventsCount++);
+        changesManager.registerListener(new ChangesListener() {
+            @Subscribe
+            public void onAddedUser(AddUserEvent event) {
+                addUserEventsCount++;
+            }
+        });
+        changesManager.registerListener(new ChangesListener() {
+            @Subscribe
+            public void onDeletedUser(DeleteUserEvent event) {
+                deleteUserEventsCount++;
+            }
+        });
     }
 
     @Test
@@ -83,11 +95,11 @@ class ChangesManagerTest {
     }
 
     private void undo() {
-        changesManager.undo();
+        historyProvider.undo();
     }
 
     private void redo() {
-        changesManager.redo();
+        historyProvider.redo();
     }
 
     void verifyState(String... users) {
@@ -95,11 +107,11 @@ class ChangesManagerTest {
     }
 
     void verifyCanUndo(boolean canUndo) {
-        assertThat(changesManager.canUndo()).isEqualTo(canUndo);
+        assertThat(historyProvider.canUndo()).isEqualTo(canUndo);
     }
 
     void verifyCanRedo(boolean canRedo) {
-        assertThat(changesManager.canRedo()).isEqualTo(canRedo);
+        assertThat(historyProvider.canRedo()).isEqualTo(canRedo);
     }
 
     void verifyAddUserEventsCount(int expectEventsCount) {
