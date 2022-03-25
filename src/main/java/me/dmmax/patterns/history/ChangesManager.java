@@ -41,7 +41,6 @@ public class ChangesManager {
     public void executeCommand(Command command) {
         System.out.println("Executing command");
         command.execute();
-        eventBus.post(command);
         historyProvider.addCommand(command);
     }
 
