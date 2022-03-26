@@ -7,7 +7,7 @@ import me.dmmax.patterns.history.event.ChangesEvent;
 public class ChangesManager {
 
     private final HistoryProvider historyProvider = new HistoryProvider();
-    private final EventBus eventBus = new EventBus(getClass().getSimpleName());
+    private final EventBus eventBus = new EventBus(EventBusExceptionHandler.getInstance());
 
     public ChangesManager(ChangesState state) {
         registerListener(state);

@@ -1,5 +1,6 @@
 package me.dmmax.patterns.history;
 
+import com.google.common.base.VerifyException;
 import com.google.common.eventbus.Subscribe;
 import me.dmmax.patterns.history.event.UserEvent;
 import me.dmmax.patterns.history.model.User;
@@ -30,12 +31,20 @@ public class ChangesState {
         users.remove(idx);
     }
 
+    @Subscribe
+    void onUpdateUser(UserEvent.UpdateUserEvent event) {
+        var user = event.user();
+        System.out.println("Updated user: " + user.name());
+        var idx = findIdxById(user.id());
+        users.set(idx, user);
+    }
+
     private int findIdxById(String userId) {
         for (var idx = 0; idx < users.size(); idx++) {
             if (users.get(idx).id().equals(userId)) {
                 return idx;
             }
         }
-        throw new IllegalArgumentException("Could not find user by id: " + userId);
+        throw new VerifyException("Could not find user by id: " + userId);
     }
 }

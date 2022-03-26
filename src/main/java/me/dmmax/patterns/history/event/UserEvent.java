@@ -22,6 +22,10 @@ public abstract class UserEvent implements ChangesEvent {
         return new DeleteUserEvent(user);
     }
 
+    public static UpdateUserEvent updateUser(User user) {
+        return new UpdateUserEvent(user);
+    }
+
     public static class AddUserEvent extends UserEvent {
 
         private AddUserEvent(User user) {
@@ -32,6 +36,13 @@ public abstract class UserEvent implements ChangesEvent {
     public static class DeleteUserEvent extends UserEvent {
 
         private DeleteUserEvent(User user) {
+            super(user);
+        }
+    }
+
+    public static class UpdateUserEvent extends UserEvent {
+
+        private UpdateUserEvent(User user) {
             super(user);
         }
     }

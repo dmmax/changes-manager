@@ -20,6 +20,10 @@ public abstract class UserCommand implements UndoCommand{
         return new DeleteUserCommand(changesManager, user);
     }
 
+    public static UpdateUserCommand updateUser(ChangesManager changesManager, User oldUser, User newUser) {
+        return new UpdateUserCommand(changesManager, oldUser, newUser);
+    }
+
     public static class AddUserCommand extends UserCommand {
 
         private final User user;
@@ -57,6 +61,29 @@ public abstract class UserCommand implements UndoCommand{
         @Override
         public UndoCommand undoCommand() {
             return UserCommand.addUser(changesManager, user);
+        }
+    }
+
+    public static class UpdateUserCommand extends UserCommand {
+
+        private final User oldUser;
+        private final User newUser;
+
+        private UpdateUserCommand(ChangesManager changesManager, User oldUser, User newUser) {
+            super(changesManager);
+            this.oldUser = oldUser;
+            this.newUser = newUser;
+        }
+
+        @Override
+        public void execute() {
+            changesManager.post(UserEvent.updateUser(newUser));
+        }
+
+        @Override
+        public UndoCommand undoCommand() {
+            // Replace positions newUser -> oldUser, oldUser -> newUser
+            return UserCommand.updateUser(changesManager, newUser, oldUser);
         }
     }
 }
