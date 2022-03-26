@@ -3,6 +3,7 @@ package me.dmmax.patterns.history;
 import com.google.common.eventbus.Subscribe;
 import me.dmmax.patterns.history.command.UserCommand;
 import me.dmmax.patterns.history.event.UserEvent;
+import me.dmmax.patterns.history.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -83,12 +84,12 @@ class ChangesManagerTest {
         verifyDeleteUserEventsCount(5);
     }
 
-    private void addUser(String user) {
-        changesManager.executeCommand(UserCommand.addUser(changesManager, user));
+    private void addUser(String idAndName) {
+        changesManager.executeCommand(UserCommand.addUser(changesManager, new User(idAndName, idAndName)));
     }
 
-    private void deleteUser(String user) {
-        changesManager.executeCommand(UserCommand.deleteUser(changesManager, user));
+    private void deleteUser(String idAndName) {
+        changesManager.executeCommand(UserCommand.deleteUser(changesManager, new User(idAndName, idAndName)));
     }
 
     private void undo() {
@@ -100,7 +101,8 @@ class ChangesManagerTest {
     }
 
     void verifyState(String... users) {
-        assertThat(changesState.users()).containsExactlyInAnyOrder(users);
+        assertThat(changesState.users()).extracting(User::name)
+                .containsExactlyInAnyOrder(users);
     }
 
     void verifyCanUndo(boolean canUndo) {

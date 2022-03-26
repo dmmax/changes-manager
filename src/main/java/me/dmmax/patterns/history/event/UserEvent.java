@@ -1,35 +1,37 @@
 package me.dmmax.patterns.history.event;
 
+import me.dmmax.patterns.history.model.User;
+
 public abstract class UserEvent implements ChangesEvent {
 
-    private final String user;
+    private final User user;
 
-    protected UserEvent(String user) {
+    protected UserEvent(User user) {
         this.user = user;
     }
 
-    public String user() {
+    public User user() {
         return user;
     }
 
-    public static AddUserEvent addUser(String user) {
+    public static AddUserEvent addUser(User user) {
         return new AddUserEvent(user);
     }
 
-    public static DeleteUserEvent deleteUser(String user) {
+    public static DeleteUserEvent deleteUser(User user) {
         return new DeleteUserEvent(user);
     }
 
     public static class AddUserEvent extends UserEvent {
 
-        private AddUserEvent(String user) {
+        private AddUserEvent(User user) {
             super(user);
         }
     }
 
     public static class DeleteUserEvent extends UserEvent {
 
-        private DeleteUserEvent(String user) {
+        private DeleteUserEvent(User user) {
             super(user);
         }
     }

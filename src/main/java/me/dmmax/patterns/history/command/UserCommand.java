@@ -2,6 +2,7 @@ package me.dmmax.patterns.history.command;
 
 import me.dmmax.patterns.history.ChangesManager;
 import me.dmmax.patterns.history.event.UserEvent;
+import me.dmmax.patterns.history.model.User;
 
 public abstract class UserCommand implements UndoCommand{
 
@@ -11,19 +12,19 @@ public abstract class UserCommand implements UndoCommand{
         this.changesManager = changesManager;
     }
 
-    public static AddUserCommand addUser(ChangesManager changesManager, String user) {
+    public static AddUserCommand addUser(ChangesManager changesManager, User user) {
         return new AddUserCommand(changesManager, user);
     }
 
-    public static DeleteUserCommand deleteUser(ChangesManager changesManager, String user) {
+    public static DeleteUserCommand deleteUser(ChangesManager changesManager, User user) {
         return new DeleteUserCommand(changesManager, user);
     }
 
     public static class AddUserCommand extends UserCommand {
 
-        private final String user;
+        private final User user;
 
-        private AddUserCommand(ChangesManager changesManager, String user) {
+        private AddUserCommand(ChangesManager changesManager, User user) {
             super(changesManager);
             this.user = user;
         }
@@ -41,9 +42,9 @@ public abstract class UserCommand implements UndoCommand{
 
     public static class DeleteUserCommand extends UserCommand {
 
-        private final String user;
+        private final User user;
 
-        private DeleteUserCommand(ChangesManager changesManager, String user) {
+        private DeleteUserCommand(ChangesManager changesManager, User user) {
             super(changesManager);
             this.user = user;
         }
