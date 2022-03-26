@@ -6,14 +6,10 @@ import me.dmmax.patterns.history.event.ChangesEvent;
 
 public class ChangesManager {
 
-    // Service
     private final HistoryProvider historyProvider = new HistoryProvider();
-
-    // Listeners
-    private final EventBus eventBus = new EventBus("Changes Manager");
+    private final EventBus eventBus = new EventBus(getClass().getSimpleName());
 
     public ChangesManager(ChangesState state) {
-        // Data
         registerListener(state);
     }
 
