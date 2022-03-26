@@ -1,10 +1,8 @@
 package me.dmmax.patterns.history;
 
 import com.google.common.eventbus.Subscribe;
-import me.dmmax.patterns.history.command.AddUserCommand;
-import me.dmmax.patterns.history.command.DeleteUserCommand;
-import me.dmmax.patterns.history.event.AddUserEvent;
-import me.dmmax.patterns.history.event.DeleteUserEvent;
+import me.dmmax.patterns.history.command.UserCommand;
+import me.dmmax.patterns.history.event.UserEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,22 +19,21 @@ class ChangesManagerTest {
 
     @BeforeEach
     void setUp() {
-        changesManager.registerListener(new ChangesListener() {
+        changesManager.registerListener(new Object() {
             @Subscribe
-            public void onAddedUser(AddUserEvent event) {
+            void onAddedUser(UserEvent.AddUserEvent event) {
                 addUserEventsCount++;
             }
-        });
-        changesManager.registerListener(new ChangesListener() {
+
             @Subscribe
-            public void onDeletedUser(DeleteUserEvent event) {
+            void onAddedUser(UserEvent.DeleteUserEvent event) {
                 deleteUserEventsCount++;
             }
         });
     }
 
     @Test
-    void testCasesAllAtOnce() {
+    void testAllCasesAtOnce() {
         // Add
         addUser("test1");
         addUser("test2");
@@ -87,11 +84,11 @@ class ChangesManagerTest {
     }
 
     private void addUser(String user) {
-        changesManager.executeCommand(new AddUserCommand(changesManager, user));
+        changesManager.executeCommand(UserCommand.addUser(changesManager, user));
     }
 
     private void deleteUser(String user) {
-        changesManager.executeCommand(new DeleteUserCommand(changesManager, user));
+        changesManager.executeCommand(UserCommand.deleteUser(changesManager, user));
     }
 
     private void undo() {

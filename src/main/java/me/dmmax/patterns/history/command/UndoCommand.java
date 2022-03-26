@@ -1,8 +1,8 @@
 package me.dmmax.patterns.history.command;
 
-public interface Command {
+public interface UndoCommand {
 
     void execute();
 
-    Command undoCommand();
+    UndoCommand undoCommand();
 }

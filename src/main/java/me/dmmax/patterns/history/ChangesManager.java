@@ -1,11 +1,8 @@
 package me.dmmax.patterns.history;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import me.dmmax.patterns.history.command.Command;
-import me.dmmax.patterns.history.event.AddUserEvent;
+import me.dmmax.patterns.history.command.UndoCommand;
 import me.dmmax.patterns.history.event.ChangesEvent;
-import me.dmmax.patterns.history.event.DeleteUserEvent;
 
 public class ChangesManager {
 
@@ -15,40 +12,32 @@ public class ChangesManager {
     // Listeners
     private final EventBus eventBus = new EventBus("Changes Manager");
 
-    // Data
-    private final ChangesState state;
-
     public ChangesManager(ChangesState state) {
-        this.state = state;
-        initInternalListeners();
+        // Data
+        registerListener(state);
     }
 
-    private void initInternalListeners() {
-        registerListener(new ChangesListener() {
-            @Subscribe
-            public void onAddedUser(AddUserEvent event) {
-                state.addUser(event.user());
-            }
-        });
-        registerListener(new ChangesListener() {
-            @Subscribe
-            public void onDeletedUser(DeleteUserEvent event) {
-                state.deleteUser(event.user());
-            }
-        });
-    }
-
-    public void executeCommand(Command command) {
-        System.out.println("Executing command");
+    /**
+     * Use this method when you want to keep the command in history and use it later with undo/redo actions
+     *
+     * @param command – undo command
+     */
+    public void executeCommand(UndoCommand command) {
+        System.out.println("Executing command and add it to the history");
         command.execute();
         historyProvider.addCommand(command);
     }
 
+    /**
+     * Use this method when you want to send an update to listeners
+     *
+     * @param event – changes event
+     */
     public void post(ChangesEvent event) {
         eventBus.post(event);
     }
 
-    public void registerListener(ChangesListener listener) {
+    public void registerListener(Object listener) {
         eventBus.register(listener);
     }
 

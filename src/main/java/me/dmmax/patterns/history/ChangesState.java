@@ -1,5 +1,8 @@
 package me.dmmax.patterns.history;
 
+import com.google.common.eventbus.Subscribe;
+import me.dmmax.patterns.history.event.UserEvent;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,11 +14,17 @@ public class ChangesState {
         return users;
     }
 
-    void addUser(String user) {
+    @Subscribe
+    void onAddedUser(UserEvent.AddUserEvent event) {
+        var user = event.user();
+        System.out.println("Added user: " + user);
         users.add(user);
     }
 
-    void deleteUser(String user) {
+    @Subscribe
+    void onDeletedUser(UserEvent.DeleteUserEvent event) {
+        var user = event.user();
+        System.out.println("Deleted user: " + user);
         users.remove(user);
     }
 }
