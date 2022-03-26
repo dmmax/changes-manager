@@ -26,22 +26,22 @@ class ChangesManagerTest {
     void setUp() {
         changesManager.registerListener(new Object() {
             @Subscribe
-            void onAddedUser(UserEvent.AddUserEvent event) {
+            private void onAddedUser(UserEvent.AddUserEvent event) {
                 addUserEventsCount++;
             }
 
             @Subscribe
-            void onAddedUser(UserEvent.DeleteUserEvent event) {
+            private void onAddedUser(UserEvent.DeleteUserEvent event) {
                 deleteUserEventsCount++;
             }
 
             @Subscribe
-            void onUpdatedUser(UserEvent.UpdateUserEvent event) {
+            private void onUpdatedUser(UserEvent.UpdateUserEvent event) {
                 updateUserEventsCount++;
             }
 
             @Subscribe
-            void onExceptionThrown(ExceptionHandlerEvent event) {
+            private void onExceptionThrown(ExceptionHandlerEvent event) {
                 exceptionThrownEventsCount++;
             }
         });
