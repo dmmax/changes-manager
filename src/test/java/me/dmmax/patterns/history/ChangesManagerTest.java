@@ -12,6 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ChangesManagerTest {
 
+    private static final String DEFAULT_COMPANY_ID = "companyId";
+
     private final ChangesState changesState = new ChangesState();
     private final ChangesManager changesManager = new ChangesManager(changesState);
     private final HistoryProvider historyProvider = changesManager.historyProvider();
@@ -150,23 +152,23 @@ class ChangesManagerTest {
         verifyUpdateUserEventsCount(6);
         // Try to update non-existing user id
         verifyThrownExceptionEventsCount(0);
-        updateUser(new User("unkonwn-id", "unknown-name"), "newName");
+        updateUser(new User("unknown-id", "unknown-name", DEFAULT_COMPANY_ID), "newName");
         verifyThrownExceptionEventsCount(1);
         verifyUpdateUserEventsCount(7);
     }
 
     private User addUser(String idAndName) {
-        var userToAdd = new User(idAndName, idAndName);
+        var userToAdd = new User(idAndName, idAndName, DEFAULT_COMPANY_ID);
         changesManager.executeCommand(UserCommand.addUser(changesManager, userToAdd));
         return userToAdd;
     }
 
     private void deleteUser(String idAndName) {
-        changesManager.executeCommand(UserCommand.deleteUser(changesManager, new User(idAndName, idAndName)));
+        changesManager.executeCommand(UserCommand.deleteUser(changesManager, new User(idAndName, idAndName, DEFAULT_COMPANY_ID)));
     }
 
     private void updateUser(User oldUser, String newName) {
-        changesManager.executeCommand(UserCommand.updateUser(changesManager, oldUser, new User(oldUser.id(), newName)));
+        changesManager.executeCommand(UserCommand.updateUser(changesManager, oldUser, new User(oldUser.id(), newName, DEFAULT_COMPANY_ID)));
     }
 
     private void undo() {

@@ -8,6 +8,7 @@ import me.dmmax.patterns.history.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChangesState {
 
@@ -18,9 +19,17 @@ public class ChangesState {
         return users;
     }
 
+    public List<User> findUsersByCompanyId(String companyId) {
+        return users().stream()
+                .filter(it -> it.companyId().equals(companyId))
+                .collect(Collectors.toList());
+    }
+
     public List<Company> companies() {
         return companies;
     }
+
+    // -- user
 
     @Subscribe
     private void onAddedUser(UserEvent.AddUserEvent event) {
@@ -53,6 +62,8 @@ public class ChangesState {
         }
         throw new IllegalArgumentException("Could not find user by id: " + userId);
     }
+
+    // -- company
 
     @Subscribe
     private void onAddedCompany(CompanyEvent.AddCompanyEvent event) {
