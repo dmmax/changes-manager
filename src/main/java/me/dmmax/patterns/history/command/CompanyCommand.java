@@ -58,7 +58,9 @@ public abstract class CompanyCommand implements UndoCommand {
         @Override
         public void execute() {
             changesManager.post(CompanyEvent.deleteCompany(company));
-            changesManager.post(UserEvent.deleteUsers(companyUsers));
+            if (!companyUsers.isEmpty()) {
+                changesManager.post(UserEvent.deleteUsers(companyUsers));
+            }
         }
 
         @Override
@@ -84,11 +86,6 @@ public abstract class CompanyCommand implements UndoCommand {
         public void execute() {
             super.execute();
             changesManager.post(UserEvent.addUsers(companyUsers));
-        }
-
-        @Override
-        public UndoCommand undoCommand() {
-            return deleteCompany(changesManager, state, company);
         }
     }
 }

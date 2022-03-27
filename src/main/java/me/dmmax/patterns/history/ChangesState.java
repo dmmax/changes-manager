@@ -54,6 +54,26 @@ public class ChangesState {
         users.set(idx, user);
     }
 
+    @Subscribe
+    private void onAddedUsers(UserEvent.AddUsersEvent event) {
+        var usersToAdd = event.users();
+        System.out.println("Added users: " + usersToAdd.size());
+        this.users.addAll(usersToAdd);
+    }
+
+    @Subscribe
+    private void onDeletedUsers(UserEvent.DeleteUsersEvent event) {
+        var userIdsToDelete = event.users().stream()
+                .map(User::id)
+                .collect(Collectors.toSet());
+        System.out.println("Users to delete: " + userIdsToDelete.size());
+        var filteredUsers = users().stream()
+                .filter(user -> !userIdsToDelete.contains(user.id()))
+                .collect(Collectors.toList());
+        users.clear();
+        users.addAll(filteredUsers);
+    }
+
     private int findUserIdxById(String userId) {
         for (var idx = 0; idx < users.size(); idx++) {
             if (users.get(idx).id().equals(userId)) {
